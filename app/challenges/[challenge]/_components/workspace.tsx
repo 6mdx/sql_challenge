@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from "next/dynamic";
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,6 +13,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useMutation } from "@tanstack/react-query";
+import { runCodeSql } from "@/lib/runCode";
+import { Loader } from "lucide-react";
+import { QueryExecResult } from "sql.js";
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,
@@ -23,49 +27,54 @@ const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ),
 });
 
-type ResultSet = {
-  columns: string[];
-  rows: Array<Record<string, string | number>>;
-};
+type SqlJSResponse = QueryExecResult[];
 
 type ChallengeWorkspaceProps = {
   challenge: {
     title: string;
+    sqlTemplate: string;
     defaultQuery: string;
-    expectedQuery: string;
-    expectedResult: ResultSet;
-    incorrectResult: ResultSet;
+    expectedResult: SqlJSResponse;
   };
 };
 
-type RunStatus = "idle" | "success" | "error";
+type RunStatus = "idle" | "success" | "failure" | "error";
 
 export default function ChallengeWorkspace({ challenge }: ChallengeWorkspaceProps) {
   const [query, setQuery] = useState(challenge.defaultQuery);
   const [status, setStatus] = useState<RunStatus>("idle");
   const [hasExecuted, setHasExecuted] = useState(false);
-  const [result, setResult] = useState<ResultSet | null>(null);
+  const [result, setResult] = useState<SqlJSResponse | null>(null);
 
-  const normalizedExpected = useMemo(() => normalizeQuery(challenge.expectedQuery), [
-    challenge.expectedQuery,
-  ]);
+  // const [db, setDb] = useState<initSqlJs.Database | null>(null);
 
-  const activeColumns = result?.columns ?? challenge.expectedResult.columns;
+  useEffect(() => {
 
-  const handleRun = () => {
-    const normalizedUserQuery = normalizeQuery(query);
-    const isCorrect = normalizedUserQuery === normalizedExpected;
+  }, []);
 
-    setHasExecuted(true);
-    if (isCorrect) {
+  const { mutate, isPending, isError, error } = useMutation({
+    mutationFn: async () => {
+      setStatus("idle");
+      setHasExecuted(false);
+      setResult(null);
+      const output = await runCodeSql(challenge.sqlTemplate, query);
+      return output.data;
+    },
+    onSuccess: (data) => {
+      console.log("Success executing", data);
+      if (JSON.stringify(data) !== JSON.stringify(challenge.expectedResult)) {
+        setStatus("failure");
+        setResult(data);
+        setHasExecuted(true);
+        return
+      }
       setStatus("success");
-      setResult(challenge.expectedResult);
-      return;
-    }
+      setResult(data);
+      setHasExecuted(true);
+    },
+  })
 
-    setStatus("error");
-    setResult(challenge.incorrectResult);
-  };
+  // const activeColumns = result?.columns ?? challenge.expectedResult.columns;
 
   const handleReset = () => {
     setQuery(challenge.defaultQuery);
@@ -99,10 +108,19 @@ export default function ChallengeWorkspace({ challenge }: ChallengeWorkspaceProp
         </div>
 
         <div className="flex justify-end gap-3">
-          <Button variant="outline" onClick={handleReset}>
+          <Button disabled={isPending} variant="outline" onClick={handleReset}>
             Reset
           </Button>
-          <Button onClick={handleRun}>Run Query</Button>
+          <Button disabled={isPending} onClick={() => mutate()}>
+            {isPending ?
+              <>
+                <Loader className="mr-2 animate-spin" />
+                Running...
+              </>
+              :
+              "Run Query"
+            }
+          </Button>
         </div>
 
         <div className="space-y-3">
@@ -127,29 +145,35 @@ export default function ChallengeWorkspace({ challenge }: ChallengeWorkspaceProp
 
           <div className="overflow-x-auto rounded-2xl border border-neutral-200 bg-white">
             {result ? (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    {activeColumns.map((column) => (
-                      <TableHead key={column}>{column}</TableHead>
-                    ))}
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {result.rows.map((row, idx) => (
-                    <TableRow key={`${challenge.title}-row-${idx}`}>
-                      {activeColumns.map((column) => (
-                        <TableCell key={`${column}-${idx}`}>
-                          {formatCellValue(row[column])}
-                        </TableCell>
+              <>
+                {result.map((table, i) => (
+                  <Table key={`table-key-${i}`}>
+                    <TableHeader>
+                      <TableRow>
+                        {table.columns.map((column) => (
+                          <TableHead key={column}>{column}</TableHead>
+                        ))}
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {table.values.map((row, j) => (
+                        <TableRow key={j}>
+                          {row.map((cell, k) => (
+                            <TableCell key={k}>{formatCellValue(cell)}</TableCell>
+                          ))}
+                        </TableRow>
                       ))}
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                    </TableBody>
+                  </Table>
+                ))}
+              </>
             ) : (
               <div className="flex h-40 items-center justify-center text-sm text-neutral-500">
-                Run your query to see the dataset preview.
+                {isError ?
+                  <span className="text-xs font-medium uppercase tracking-wide text-rose-600">Error : {error?.message}</span>
+                  :
+                  <p>Run your query to see the dataset preview.</p>
+                }
               </div>
             )}
           </div>
@@ -174,7 +198,7 @@ function normalizeQuery(input: string): string {
   return input.replace(/\s+/g, " ").replace(/;\s*$/, "").trim().toLowerCase();
 }
 
-function formatCellValue(value: string | number | undefined): string {
+function formatCellValue(value: number | string | Uint8Array | null | undefined) {
   if (value === undefined) {
     return "—";
   }
@@ -182,6 +206,5 @@ function formatCellValue(value: string | number | undefined): string {
   if (typeof value === "number") {
     return Number.isInteger(value) ? value.toString() : value.toFixed(2);
   }
-
   return value;
 }
