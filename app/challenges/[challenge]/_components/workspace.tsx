@@ -84,7 +84,7 @@ export default function ChallengeWorkspace({ challenge }: ChallengeWorkspaceProp
   };
 
   return (
-    <Card className="h-full border-neutral-200 shadow-sm">
+    <Card className="h-full border-neutral-200 shadow-sm gap-0">
       <CardHeader className="pb-0">
         <CardTitle className="text-xl">SQL Playground</CardTitle>
       </CardHeader>
@@ -143,11 +143,12 @@ export default function ChallengeWorkspace({ challenge }: ChallengeWorkspaceProp
             )}
           </div>
 
-          <div className="overflow-x-auto rounded-2xl border border-neutral-200 bg-white">
-            {result ? (
-              <>
-                {result.map((table, i) => (
-                  <Table key={`table-key-${i}`}>
+
+          {result ? (
+            <>
+              {result.map((table, i) => (
+                <div key={`table-key-${i}`} className="overflow-x-auto rounded-2xl border border-neutral-200 bg-white">
+                  <Table>
                     <TableHeader>
                       <TableRow>
                         {table.columns.map((column) => (
@@ -165,9 +166,11 @@ export default function ChallengeWorkspace({ challenge }: ChallengeWorkspaceProp
                       ))}
                     </TableBody>
                   </Table>
-                ))}
-              </>
-            ) : (
+                </div>
+              ))}
+            </>
+          ) : (
+            <div className="overflow-x-auto rounded-2xl border border-neutral-200 bg-white">
               <div className="flex h-40 items-center justify-center text-sm text-neutral-500">
                 {isError ?
                   <span className="text-xs font-medium uppercase tracking-wide text-rose-600">Error : {error?.message}</span>
@@ -175,8 +178,8 @@ export default function ChallengeWorkspace({ challenge }: ChallengeWorkspaceProp
                   <p>Run your query to see the dataset preview.</p>
                 }
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
           {hasExecuted && (
             <div>
@@ -189,7 +192,7 @@ export default function ChallengeWorkspace({ challenge }: ChallengeWorkspaceProp
           )}
         </div>
       </CardContent>
-    </Card>
+    </Card >
   );
 }
 

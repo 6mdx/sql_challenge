@@ -1,3 +1,4 @@
+import { Signal, SignalHigh, SignalMedium, LucideIcon } from "lucide-react";
 import { QueryExecResult } from "sql.js";
 
 type ChallengeDifficulty = "Easy" | "Medium" | "Hard";
@@ -24,10 +25,10 @@ type ChallengeContent = {
     expectedResult: SqlJSResponse;
 };
 
-export const DIFFICULTY_TOKEN: Record<ChallengeDifficulty, { label: string; badge: "success" | "warning" | "destructive" }> = {
-    Easy: { label: "Easy 🟢", badge: "success" },
-    Medium: { label: "Medium 🟡", badge: "warning" },
-    Hard: { label: "Hard 🔴", badge: "destructive" },
+export const DIFFICULTY_TOKEN: Record<ChallengeDifficulty, { label: string; badge: "success" | "warning" | "destructive", Icon: LucideIcon }> = {
+    Easy: { label: "Easy", badge: "success" , Icon: SignalMedium },
+    Medium: { label: "Medium", badge: "warning", Icon: SignalHigh },
+    Hard: { label: "Hard", badge: "destructive", Icon: Signal },
 };
 
 export const CHALLENGE_CATALOG: Array<ChallengeContent> = [
@@ -79,7 +80,7 @@ export const CHALLENGE_CATALOG: Array<ChallengeContent> = [
 
             {SQL_QUERY_PLACEHOLDER}
             `,
-        defaultQuery: `-- Write your SQL solution below\nSELECT student_id, student_name, score\nFROM students\nWHERE score >= 90\nORDER BY score DESC, student_name ASC;\n`,
+        defaultQuery: `-- Write your SQL solution below\n`,
         expectedResult: [
             {
                 columns: ["student_id", "student_name", "score"],
