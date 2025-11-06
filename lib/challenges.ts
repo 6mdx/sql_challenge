@@ -13,7 +13,7 @@ type ChallengeTable = {
 
 type SqlJSResponse = QueryExecResult[];
 
-type ChallengeContent = {
+export type ChallengeContent = {
     slug: string;
     title: string;
     difficulty: ChallengeDifficulty;

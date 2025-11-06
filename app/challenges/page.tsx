@@ -1,19 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { CHALLENGE_CATALOG, DIFFICULTY_TOKEN } from "@/lib/challenges";
-import {
-    Card,
-    CardHeader,
-    CardTitle,
-    CardDescription,
-    CardContent,
-    CardFooter,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Check } from "lucide-react";
+import { CHALLENGE_CATALOG } from "@/lib/challenges";
+import { Button } from "@/components/ui/button";import { ChallengeCard } from "./_components/challenge-card";
+;
 
 type DifficultyFilter = "All" | "Easy" | "Medium" | "Hard";
 
@@ -53,7 +43,7 @@ export default function Challenges() {
             {/* Challenges Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                 {filteredChallenges.map((challenge) => (
-                    <ChallengeCard key={challenge.slug} challenge={{sloved:true, ...challenge}} />
+                    <ChallengeCard key={challenge.slug} challenge={challenge} />
                 ))}
             </div>
 
@@ -67,39 +57,4 @@ export default function Challenges() {
             )}
         </div>
     );
-}
-
-
-type Challenge = typeof CHALLENGE_CATALOG[number] & { sloved?: boolean };
-
-function ChallengeCard({ challenge }: { challenge: Challenge}) {
-    const DifficultyIcon = DIFFICULTY_TOKEN[challenge.difficulty].Icon;
-    
-    return (
-        <Card className="flex flex-col hover:shadow-lg transition-shadow">
-            <CardHeader className="">
-                <CardTitle className="text-xl">{challenge.title}</CardTitle>
-                <CardDescription className="line-clamp-4">
-                    {challenge.description}
-                </CardDescription>
-            </CardHeader>
-            <CardFooter className="justify-between">
-                <div className="flex items-start gap-2">
-                    <Badge variant={DIFFICULTY_TOKEN[challenge.difficulty].badge}>
-                        {DIFFICULTY_TOKEN[challenge.difficulty].label}
-                        <DifficultyIcon className="ml-1 h-4 w-4" />
-                    </Badge>
-                    {challenge.sloved && <Badge variant="success">
-                        SOLVED <Check />
-                    </Badge>}
-                </div>
-                <Button asChild size="sm">
-                    <Link href={`/challenges/${challenge.slug}`}>
-                        Start Challenge 
-                        <ArrowRight/>
-                    </Link>
-                </Button>
-            </CardFooter>
-        </Card>
-    )
 }

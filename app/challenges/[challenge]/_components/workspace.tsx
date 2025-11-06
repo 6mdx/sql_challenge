@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,6 +17,9 @@ import { useMutation } from "@tanstack/react-query";
 import { runCodeSql } from "@/lib/runCode";
 import { Loader } from "lucide-react";
 import { QueryExecResult } from "sql.js";
+import { useLocalStorage } from "usehooks-ts";
+import { useScoreStore } from "@/lib/useScoreStore";
+import { Badge } from "@/components/ui/badge";
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,
@@ -32,6 +35,8 @@ type SqlJSResponse = QueryExecResult[];
 type ChallengeWorkspaceProps = {
   challenge: {
     title: string;
+    slug: string;
+    difficulty: "Easy" | "Medium" | "Hard";
     sqlTemplate: string;
     defaultQuery: string;
     expectedResult: SqlJSResponse;
@@ -41,17 +46,11 @@ type ChallengeWorkspaceProps = {
 type RunStatus = "idle" | "success" | "failure" | "error";
 
 export default function ChallengeWorkspace({ challenge }: ChallengeWorkspaceProps) {
-  const [query, setQuery] = useState(challenge.defaultQuery);
+  const [query, setQuery] = useLocalStorage(`challenge-${challenge.slug}-query`, challenge.defaultQuery);
   const [status, setStatus] = useState<RunStatus>("idle");
   const [hasExecuted, setHasExecuted] = useState(false);
   const [result, setResult] = useState<SqlJSResponse | null>(null);
-
-  // const [db, setDb] = useState<initSqlJs.Database | null>(null);
-
-  useEffect(() => {
-
-  }, []);
-
+  const { solved, setSolved } = useScoreStore()
   const { mutate, isPending, isError, error } = useMutation({
     mutationFn: async () => {
       setStatus("idle");
@@ -70,6 +69,7 @@ export default function ChallengeWorkspace({ challenge }: ChallengeWorkspaceProp
       }
       setStatus("success");
       setResult(data);
+      setSolved(challenge.slug, challenge.difficulty)
       setHasExecuted(true);
     },
   })
@@ -86,7 +86,10 @@ export default function ChallengeWorkspace({ challenge }: ChallengeWorkspaceProp
   return (
     <Card className="h-full border-neutral-200 shadow-sm gap-0">
       <CardHeader className="pb-0">
-        <CardTitle className="text-xl">SQL Playground</CardTitle>
+        <div className="flex flex-col xl:flex-row xl:items-center justify-between">
+          <CardTitle className="text-xl">SQL Playground</CardTitle>
+          {solved[challenge.slug] && <Badge variant="success">🎉 Congratulations, you solved it!</Badge>}
+        </div>
       </CardHeader>
       <CardContent className="space-y-5 pt-4">
         <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-950">
@@ -107,7 +110,7 @@ export default function ChallengeWorkspace({ challenge }: ChallengeWorkspaceProp
           />
         </div>
 
-        <div className="flex justify-end gap-3">
+        <div className="flex items-center justify-end gap-3">
           <Button disabled={isPending} variant="outline" onClick={handleReset}>
             Reset
           </Button>
