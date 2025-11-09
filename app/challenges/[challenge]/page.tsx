@@ -17,6 +17,8 @@ import {
 import ChallengeWorkspace from "./_components/workspace";
 import { CHALLENGE_CATALOG, DIFFICULTY_TOKEN } from "@/lib/challenges";
 import { notFound } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default async function ChallengePage({
     params,
@@ -42,10 +44,15 @@ export default async function ChallengePage({
                         {challenge.title}
                     </h1>
                 </div>
+                <div className="flex items-center gap-2">
                 <Badge variant={DIFFICULTY_TOKEN[challenge.difficulty].badge}>
                     {DIFFICULTY_TOKEN[challenge.difficulty].label}
                     <DifficultyIcon className="ml-1 h-4 w-4" />
                 </Badge>
+                <Button size="sm" asChild>
+                    <Link href="/challenges">Go Back</Link>
+                </Button>
+                </div>
             </header>
 
             <div className="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-8">
