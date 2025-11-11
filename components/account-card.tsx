@@ -1,3 +1,4 @@
+"use client"
 import {
     Avatar,
     AvatarFallback,
@@ -9,6 +10,7 @@ import {
     HoverCardContent,
     HoverCardTrigger,
 } from "@/components/ui/hover-card"
+import { useState } from "react"
 
 type User = {
     name: string
@@ -20,9 +22,10 @@ type User = {
 }
 
 export function HoverCardAccount({ user }: { user: User }) {
+    const [open, setOpen] = useState(false)
     return (
-        <HoverCard>
-            <HoverCardTrigger asChild>
+        <HoverCard open={open} onOpenChange={setOpen}>
+            <HoverCardTrigger onClick={() => setOpen(state => !state)}  asChild>
                 <Button className="p-0" variant="link">@{user.name}</Button>
             </HoverCardTrigger>
             <HoverCardContent className="w-85">
