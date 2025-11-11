@@ -24,7 +24,7 @@ import { Badge } from "@/components/ui/badge";
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,
   loading: () => (
-    <div className="flex h-64 items-center justify-center rounded-2xl border border-dashed border-neutral-300 bg-neutral-50 text-sm text-neutral-500">
+    <div className="flex h-64 items-center justify-center rounded-2xl border border-dashed text-sm">
       Loading editor…
     </div>
   ),
@@ -84,7 +84,7 @@ export default function ChallengeWorkspace({ challenge }: ChallengeWorkspaceProp
   };
 
   return (
-    <Card className="h-full border-neutral-200 shadow-sm gap-0">
+    <Card className="h-full  shadow-sm gap-0">
       <CardHeader className="pb-0">
         <div className="flex flex-col xl:flex-row xl:items-center justify-between">
           <CardTitle className="text-xl">SQL Playground</CardTitle>
@@ -92,7 +92,7 @@ export default function ChallengeWorkspace({ challenge }: ChallengeWorkspaceProp
         </div>
       </CardHeader>
       <CardContent className="space-y-5 pt-4">
-        <div className="overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-950">
+        <div className="overflow-hidden rounded-2xl border">
           <MonacoEditor
             height={320}
             language="sql"
@@ -140,7 +140,7 @@ export default function ChallengeWorkspace({ challenge }: ChallengeWorkspaceProp
                 </span>
               )
             ) : (
-              <span className="text-xs font-medium uppercase tracking-wide text-neutral-400">
+              <span className="text-xs font-medium uppercase tracking-wide">
                 Awaiting Run
               </span>
             )}
@@ -150,7 +150,7 @@ export default function ChallengeWorkspace({ challenge }: ChallengeWorkspaceProp
           {result ? (
             <>
               {result.map((table, i) => (
-                <div key={`table-key-${i}`} className="overflow-x-auto rounded-2xl border border-neutral-200 bg-white">
+                <div key={`table-key-${i}`} className="overflow-x-auto rounded-2xl border">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -173,8 +173,8 @@ export default function ChallengeWorkspace({ challenge }: ChallengeWorkspaceProp
               ))}
             </>
           ) : (
-            <div className="overflow-x-auto rounded-2xl border border-neutral-200 bg-white">
-              <div className="flex h-40 items-center justify-center text-sm text-neutral-500">
+            <div className="overflow-x-auto rounded-2xl border">
+              <div className="flex h-40 items-center justify-center text-sm">
                 {isError ?
                   <span className="text-xs font-medium uppercase tracking-wide text-rose-600">Error : {error?.message}</span>
                   :

@@ -37,10 +37,10 @@ export default async function ChallengePage({
         <div className="container mx-auto py-8 px-4">
             <header className="flex flex-wrap items-center justify-between gap-4 border-b border-neutral-200 pb-8">
                 <div className="space-y-2">
-                    <p className="text-sm font-medium uppercase tracking-[0.2em] text-neutral-500">
+                    <p className="text-sm font-medium uppercase tracking-[0.2em]">
                         SQL Challenge
                     </p>
-                    <h1 className="text-3xl font-semibold text-neutral-900 sm:text-4xl">
+                    <h1 className="text-3xl font-semibold sm:text-4xl">
                         {challenge.title}
                     </h1>
                 </div>
@@ -64,7 +64,7 @@ export default async function ChallengePage({
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <div>
-                                <h3 className="text-xs font-semibold uppercase tracking-wide text-neutral-500">
+                                <h3 className="text-xs font-semibold uppercase tracking-wide">
                                     Requirements
                                 </h3>
                                 <ul className="mt-3 space-y-2 text-sm text-neutral-700">
@@ -91,15 +91,15 @@ export default async function ChallengePage({
                                 <div key={table.name} className="space-y-4">
                                     <div className="flex items-center justify-between">
                                         <div>
-                                            <h3 className="text-base font-semibold text-neutral-900">
+                                            <h3 className="text-base font-semibold">
                                                 {table.name}
                                             </h3>
-                                            <p className="text-sm text-neutral-600">{table.description}</p>
+                                            <p className="text-sm ">{table.description}</p>
                                         </div>
                                     </div>
 
-                                    <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white">
-                                        <div className="border-b border-neutral-200 bg-neutral-50 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
+                                    <div className="overflow-hidden rounded-xl border">
+                                        <div className="border-b px-4 py-2 text-xs font-semibold uppercase tracking-wide">
                                             Columns
                                         </div>
                                         <Table>
@@ -113,11 +113,11 @@ export default async function ChallengePage({
                                             <TableBody>
                                                 {table.columns.map((column) => (
                                                     <TableRow key={column.name}>
-                                                        <TableCell className="font-medium text-neutral-900">
+                                                        <TableCell className="font-medium">
                                                             {column.name}
                                                         </TableCell>
                                                         <TableCell>{column.type}</TableCell>
-                                                        <TableCell className="text-neutral-600">
+                                                        <TableCell className="">
                                                             {column.note ?? "—"}
                                                         </TableCell>
                                                     </TableRow>
@@ -126,8 +126,8 @@ export default async function ChallengePage({
                                         </Table>
                                     </div>
 
-                                    <div className="overflow-hidden rounded-xl border border-neutral-200 bg-white">
-                                        <div className="border-b border-neutral-200 bg-neutral-50 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-neutral-500">
+                                    <div className="overflow-hidden rounded-xl border">
+                                        <div className="border-b px-4 py-2 text-xs font-semibold uppercase tracking-wide">
                                             Sample Rows
                                         </div>
                                         <Table>
