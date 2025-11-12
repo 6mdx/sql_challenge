@@ -6,6 +6,7 @@ import { GridPattern } from "@/components/ui/grid-pattern";
 import { cn } from "@/lib/utils";
 import { Header } from "@/components/header";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Analytics } from '@vercel/analytics/next';
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -58,6 +59,7 @@ export default function RootLayout({
             />
           </Providers>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );

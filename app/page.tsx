@@ -23,7 +23,7 @@ export default function Home() {
       </div>
 
       <div className="flex flex-col gap-2 items-center">
-        <h1 className="text-4xl flex flex-col gap-1 font-bold text-center">
+        <h1 className="text-xl md:text-4xl flex flex-col gap-1 font-bold text-center">
           <BlurFade duration={0.8} direction="up" inView>
             LAUNCH AND RUN YOUR
           </BlurFade>
@@ -32,7 +32,7 @@ export default function Home() {
           </BlurFade>
         </h1>
         <BlurFade duration={0.8} direction="up" delay={0.5} inView>
-          <h4 className="text-sm text-center uppercase">
+          <h4 className="text-xs md:text-sm text-center uppercase">
             Master the art of SQL through real-world challenges that test your logic speed and problem-solving<br></br> skills
             Turn every query into a victory
           </h4>
